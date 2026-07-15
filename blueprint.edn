@@ -1,0 +1,40 @@
+{:itonami.blueprint/id "cloud-itonami-isic-3211"
+ :itonami.blueprint/name "Manufacture of jewellery and related articles"
+ :itonami.blueprint/isic-rev5 "3211"
+ :itonami.blueprint/domain :jewellery/manufacturing
+ :itonami.blueprint/license "AGPL-3.0-or-later"
+ :itonami.blueprint/social-impact [:worker-safety :materials-safety :consumer-protection]
+ :itonami.blueprint/governor :jewellery-workshop-plant-operations-governor
+ :itonami.blueprint/robotics true
+ :itonami.blueprint/required-technologies [:robotics :identity :forms :dmn :bpmn :audit-ledger :cae]
+ :itonami.blueprint/optional-technologies []
+ :itonami.blueprint/status :public-oss
+ :itonami.blueprint/maturity :implemented
+ :itonami.blueprint/implemented-slice
+ "JewelryAdvisor ⊣ Jewellery Workshop Plant Operations Governor,
+ langgraph-clj StateGraph, append-only audit ledger. A jewellery-
+ workshop PLANT OPERATIONS COORDINATION actor for precious-metal
+ casting/setting/polishing lines producing finished jewellery and
+ related articles (rings/chains/pendants/bracelets in gold/silver/
+ platinum/palladium) -- not direct casting/setting/polishing-line-
+ equipment control authority and not a hallmarking/purity-assay
+ certification authority. Four ops (`:log-production-batch` /
+ `:schedule-maintenance` / `:flag-safety-concern` /
+ `:coordinate-shipment`), all `:effect :propose` only. Thirteen
+ concrete governor checks elaborate this blueprint's four HARD
+ invariants: propose-only effect, closed op allowlist, closed
+ proposal-effect allowlist (no direct casting/setting/polishing-line-
+ equipment control), permanent equipment-actuate block, permanent
+ hallmarking/purity-certification-authority block (this actor never
+ self-issues a hallmark or purity-assay certification), independent
+ workshop-equipment verification/registration before maintenance
+ scheduling, independent batch verification/registration before
+ shipment coordination, independent shipment-quantity recompute
+ against the batch's own logged production quantity, double-schedule
+ guard, metal-type validation, precious-metal-purity plausibility
+ validation, precious-metal-weight plausibility validation, and
+ defect-rate plausibility validation. Safety-concern flagging
+ (materials-safety solvent/acid hazard, theft/security concern,
+ authenticity concern) ALWAYS escalates to a human workshop supervisor;
+ `:log-production-batch` is the only op eligible to auto-commit, and
+ only at phase 3 when governor-clean."}
