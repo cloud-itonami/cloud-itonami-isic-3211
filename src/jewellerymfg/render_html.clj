@@ -4,7 +4,7 @@
   Drives the REAL actor stack (jewellerymfg.operation -> jewellerymfg.governor -> jewellerymfg.store).
   No invented numbers, no timestamps, byte-identical across reruns."
   (:require [jp-go-dds.skin]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [jewellerymfg.store :as store]
             [jewellerymfg.operation :as op]
             [jewellerymfg.phase :as phase]
