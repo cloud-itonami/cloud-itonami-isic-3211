@@ -1,0 +1,47 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README: an ISIC 3211 jewellery workshop casts rings, chains, pendants and
+;; bracelets in gold, silver, platinum and palladium, sets stones and
+;; polishes. The physical work around the casting bench: burning out
+;; investment flasks in the kiln, moving a hot flask from the kiln into the
+;; casting machine, and letting the cast flask cool before it is quenched.
+;;
+;; A flask is heated/cooled from its outer wall inwards; each thermal case
+;; models half the flask (outer wall to centre) with an adiabatic back face
+;; (symmetry), so the back face is the flask centre.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-3211"
+ :cases
+ [{:id :flask-burnout-soak
+   :kind :thermal
+   :procedure "investment flask burns out in a 730 C kiln; casting may start once the flask centre is within 30 C of the kiln"
+   :params {:conductivity-w-mk 0.40 :density-kg-m3 1500.0 :specific-heat-j-kgk 900.0
+            :t0-c 20.0 :t-hot-c 730.0 :h-front-w-m2k 25.0 :h-back-w-m2k 0.0
+            :threshold-c 700.0 :duration-s 36000.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.025 0.032 0.040 0.050 0.063]}
+   :quantity :time-to-threshold-s
+   :limit {:max 14400.0 :basis "estimate: a 4-hour soak slot in the overnight burnout programme; investment properties and kiln h = 25 W/m2K are estimates"}
+   :boundary {:lo 0.015 :hi 0.12}}
+  {:id :hot-flask-to-caster
+   :kind :manipulator
+   :procedure "casting arm with flask tongs lifts the hot flask out of the kiln and places it in the vacuum/centrifugal casting machine"
+   :params {:l1-m 0.40 :l2-m 0.35 :m1-kg 4.0 :m2-kg 3.0
+            :from [0.50 0.10] :to [0.15 0.45] :duration-s 1.2 :steps 400}
+   :sweep {:param :payload-kg :values [0.5 1.0 2.0 3.5 5.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 45.0 :basis "estimate: continuous shoulder torque of a ~5 kg-payload collaborative arm class"}
+   :boundary {:lo 0.1 :hi 20.0}}
+  {:id :cast-flask-cool-before-quench
+   :kind :thermal
+   :procedure "after the pour the cast flask stands in still air; it is quenched in water once its centre has fallen to 400 C"
+   :params {:conductivity-w-mk 0.40 :density-kg-m3 1500.0 :specific-heat-j-kgk 900.0
+            :t0-c 650.0 :t-hot-c 20.0 :h-front-w-m2k 12.0 :h-back-w-m2k 0.0
+            :threshold-c 400.0 :threshold-direction :falling :duration-s 36000.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.025 0.032 0.040 0.050 0.063]}
+   :quantity :time-to-threshold-s
+   :limit {:max 3600.0 :basis "estimate: the next pour needs the casting bench within an hour; still-air h = 12 W/m2K (convection + radiation) is an estimate"}
+   :boundary {:lo 0.015 :hi 0.12}}]}
